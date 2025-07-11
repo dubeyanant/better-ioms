@@ -12,6 +12,7 @@ import React, { useState } from "react";
 const RequestDetailsPage = () => {
 	const { user } = useAuth();
 	const { currentStage } = useWorkflow();
+	const isDone = currentStage === WorkflowStage.CLOSED;
 	// 📦 Replace these with real data (from props, context, or API)
 	const requestCreatedBy = "John Doe";
 	const department = "IT Department";
@@ -92,7 +93,7 @@ const RequestDetailsPage = () => {
 			</section>
 
 			{/* Section 3: Upload Quotations */}
-			{currentStage === WorkflowStage.QUOTATION_UPLOADED && (
+			{!isDone && currentStage === WorkflowStage.QUOTATION_UPLOADED && (
 				<>
 					<section className="bg-white shadow rounded-lg p-6">
 						<h2 className="text-xl font-semibold text-blue-600 mb-4">
@@ -106,7 +107,8 @@ const RequestDetailsPage = () => {
 			)}
 
 			{/* Section 4: Take an Action */}
-			{(user?.role === UserRole.AVP || user?.role === UserRole.CTO) &&
+			{!isDone &&
+				(user?.role === UserRole.AVP || user?.role === UserRole.CTO) &&
 				(currentStage === WorkflowStage.REVIEWED ||
 					currentStage === WorkflowStage.APPROVED) && (
 					<section>
@@ -134,7 +136,7 @@ const RequestDetailsPage = () => {
 			</section>
 
 			{/* Section 6: Final Actions */}
-			{currentStage === WorkflowStage.IOM_GENERATED && (
+			{!isDone && currentStage === WorkflowStage.IOM_GENERATED && (
 				<section className="bg-white shadow rounded-lg p-6">
 					<h2 className="text-xl font-semibold text-blue-600 mb-4">
 						Final Actions
