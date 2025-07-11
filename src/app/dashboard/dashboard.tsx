@@ -2,6 +2,8 @@
 
 import Chatbot from "@/components/chatbot";
 import FinancialDashboard from "@/components/financial-dashboard";
+import { useAuth } from "@/lib/auth-context";
+import { UserRole } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -12,6 +14,7 @@ interface Request {
 }
 
 export default function Dashboard() {
+	const { user } = useAuth();
 	const [requests, setRequests] = useState<Request[]>([
 		{ id: 1, title: "Ticket ID: 1", description: "Pending" },
 		{ id: 2, title: "Ticket ID: 2", description: "Completed" },
@@ -41,7 +44,9 @@ export default function Dashboard() {
 
 	return (
 		<div>
-			<FinancialDashboard />
+			{(user?.role === UserRole.CEO || user?.role === UserRole.CTO) && (
+				<FinancialDashboard />
+			)}
 			<div className="relative h-screen flex flex-col sm:flex-row">
 				{/* 🧱 Left section: Dashboard */}
 				<div
@@ -49,20 +54,22 @@ export default function Dashboard() {
 						showChatBotOn ? "w-full sm:w-[70%]" : "w-full"
 					}`}
 				>
-					<div className="mb-6">
-						<h2 className="text-xl font-semibold text-gray-800">
-							Create a request
-						</h2>
-						<button
-							type="button"
-							onClick={createNewRequest}
-							className="w-full mt-2 bg-white border-2 border-dashed border-blue-400 hover:border-blue-500 hover:shadow-md transition p-6 rounded-xl text-center"
-						>
-							<p className="text-blue-600 font-medium text-base">
-								+ New Request
-							</p>
-						</button>
-					</div>
+					{user?.role === UserRole.ASSOCIATE && (
+						<div className="mb-6">
+							<h2 className="text-xl font-semibold text-gray-800">
+								Create a request
+							</h2>
+							<button
+								type="button"
+								onClick={createNewRequest}
+								className="w-full mt-2 bg-white border-2 border-dashed border-blue-400 hover:border-blue-500 hover:shadow-md transition p-6 rounded-xl text-center"
+							>
+								<p className="text-blue-600 font-medium text-base">
+									+ New Request
+								</p>
+							</button>
+						</div>
+					)}
 
 					<div>
 						<h2 className="text-xl font-semibold text-gray-800">
