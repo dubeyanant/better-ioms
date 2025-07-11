@@ -24,28 +24,40 @@ import { useState } from "react";
 
 // Sample data structure - replace with your actual data
 const categoryData = {
-	technology: [
-		{ value: "software", label: "Software Development" },
-		{ value: "hardware", label: "Hardware Support" },
-		{ value: "network", label: "Network Issues" },
+	hardware: [
+		{ value: "desktop", label: "Desktop Computers" },
+		{ value: "laptop", label: "Laptops" },
+		{ value: "server", label: "Servers" },
+		{ value: "network", label: "Network Equipment" },
+		{ value: "peripherals", label: "Peripherals" },
 	],
-	marketing: [
-		{ value: "social", label: "Social Media" },
-		{ value: "content", label: "Content Creation" },
-		{ value: "advertising", label: "Advertising" },
+	software: [
+		{ value: "development", label: "Software Development" },
+		{ value: "maintenance", label: "Software Maintenance" },
+		{ value: "licensing", label: "Software Licensing" },
+		{ value: "integration", label: "System Integration" },
+		{ value: "testing", label: "Testing & QA" },
 	],
-	finance: [
-		{ value: "budget", label: "Budget Planning" },
-		{ value: "expenses", label: "Expense Management" },
-		{ value: "reporting", label: "Financial Reporting" },
+	"human resource": [
+		{ value: "disabled", label: "No sub-categories available" },
 	],
 };
+
+const costCenterData = [
+	{ value: "it-production", label: "IT-Production - Arun KP Sir" },
+	{ value: "it-security", label: "IT-Security - Amit Jaokar Sir" },
+	{ value: "it-backoffice", label: "IT-Backoffice - Mehul Vora Sir" },
+	{ value: "it-channel", label: "IT-Channel - Ashokraj Sir" },
+	{ value: "it-trading", label: "IT-Trading - Rizwan Sir" },
+	{ value: "it-middleware", label: "IT-Middleware - Shatish Babu Sir" },
+];
 
 type CategoryKey = keyof typeof categoryData;
 
 interface FormData {
 	primaryCategory: string;
 	secondaryCategory: string;
+	costCenter: string;
 	title: string;
 	description: string;
 }
@@ -54,6 +66,7 @@ export default function RequestForm() {
 	const [formData, setFormData] = useState<FormData>({
 		primaryCategory: "",
 		secondaryCategory: "",
+		costCenter: "",
 		title: "",
 		description: "",
 	});
@@ -70,6 +83,13 @@ export default function RequestForm() {
 		setFormData(prev => ({
 			...prev,
 			secondaryCategory: value,
+		}));
+	};
+
+	const handleCostCenterChange = (value: string) => {
+		setFormData(prev => ({
+			...prev,
+			costCenter: value,
 		}));
 	};
 
@@ -90,9 +110,12 @@ export default function RequestForm() {
 		? categoryData[formData.primaryCategory as CategoryKey] || []
 		: [];
 
+	const isSecondaryDisabled = formData.primaryCategory === "human resource";
+
 	const isFormValid =
 		formData.primaryCategory &&
-		formData.secondaryCategory &&
+		(isSecondaryDisabled || formData.secondaryCategory) &&
+		formData.costCenter &&
 		formData.title.trim() &&
 		formData.description.trim();
 
@@ -104,7 +127,6 @@ export default function RequestForm() {
 						<CardTitle>Create New Request</CardTitle>
 						<CardDescription>
 							Fill out the form below to create a new request.
-							Select a category and subcategory to get started.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -122,14 +144,14 @@ export default function RequestForm() {
 										<SelectValue placeholder="Select a primary category" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="technology">
-											Technology
+										<SelectItem value="hardware">
+											Hardware
 										</SelectItem>
-										<SelectItem value="marketing">
-											Marketing
+										<SelectItem value="software">
+											Software
 										</SelectItem>
-										<SelectItem value="finance">
-											Finance
+										<SelectItem value="human resource">
+											Human Resource
 										</SelectItem>
 									</SelectContent>
 								</Select>
@@ -145,14 +167,19 @@ export default function RequestForm() {
 									onValueChange={
 										handleSecondaryCategoryChange
 									}
-									disabled={!formData.primaryCategory}
+									disabled={
+										!formData.primaryCategory ||
+										isSecondaryDisabled
+									}
 								>
 									<SelectTrigger>
 										<SelectValue
 											placeholder={
-												formData.primaryCategory
-													? "Select a secondary category"
-													: "Select primary category first"
+												!formData.primaryCategory
+													? "Select primary category first"
+													: isSecondaryDisabled
+														? "No sub-categories available"
+														: "Select a secondary category"
 											}
 										/>
 									</SelectTrigger>
@@ -167,6 +194,36 @@ export default function RequestForm() {
 										))}
 									</SelectContent>
 								</Select>
+							</div>
+
+							{/* Cost Center Selector */}
+							<div className="space-y-2">
+								<Label htmlFor="cost-center">Cost Center</Label>
+								<Select
+									value={formData.costCenter}
+									onValueChange={handleCostCenterChange}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="Select a cost center" />
+									</SelectTrigger>
+									<SelectContent>
+										{costCenterData.map(option => (
+											<SelectItem
+												key={option.value}
+												value={option.value}
+											>
+												{option.label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+
+							{/* SCOPE OF WORK Heading */}
+							<div className="pt-4">
+								<h3 className="text-lg font-semibold text-foreground">
+									SCOPE OF WORK
+								</h3>
 							</div>
 
 							{/* Title Field */}
