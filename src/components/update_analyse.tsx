@@ -55,6 +55,7 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 			}
 		} catch (error) {
 			console.error("Upload failed:", error);
+			alert("Something went wrong! Please try again later.");
 		} finally {
 			setIsUploading(false); // Stop loader
 		}
