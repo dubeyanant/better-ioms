@@ -1,5 +1,6 @@
 "use client";
 
+import ActionButtons from "@/components/ui/ActionButtons";
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
@@ -96,6 +97,10 @@ const RequestDetailsPage = () => {
 			</section>
 
 			<section>{areFilesUploaded && <VendorForm />}</section>
+
+			<section>
+				<ActionButtons />
+			</section>
 
 			{/* Section 3: Approval Timeline */}
 			<section className="bg-white shadow rounded-lg p-6">
