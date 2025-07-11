@@ -43,21 +43,11 @@ const categoryData = {
 	],
 };
 
-const costCenterData = [
-	{ value: "it-production", label: "IT-Production - Arun KP Sir" },
-	{ value: "it-security", label: "IT-Security - Amit Jaokar Sir" },
-	{ value: "it-backoffice", label: "IT-Backoffice - Mehul Vora Sir" },
-	{ value: "it-channel", label: "IT-Channel - Ashokraj Sir" },
-	{ value: "it-trading", label: "IT-Trading - Rizwan Sir" },
-	{ value: "it-middleware", label: "IT-Middleware - Shatish Babu Sir" },
-];
-
 type CategoryKey = keyof typeof categoryData;
 
 interface FormData {
 	primaryCategory: string;
 	secondaryCategory: string;
-	costCenter: string;
 	title: string;
 	description: string;
 }
@@ -66,7 +56,6 @@ export default function RequestForm() {
 	const [formData, setFormData] = useState<FormData>({
 		primaryCategory: "",
 		secondaryCategory: "",
-		costCenter: "",
 		title: "",
 		description: "",
 	});
@@ -83,13 +72,6 @@ export default function RequestForm() {
 		setFormData(prev => ({
 			...prev,
 			secondaryCategory: value,
-		}));
-	};
-
-	const handleCostCenterChange = (value: string) => {
-		setFormData(prev => ({
-			...prev,
-			costCenter: value,
 		}));
 	};
 
@@ -115,7 +97,6 @@ export default function RequestForm() {
 	const isFormValid =
 		formData.primaryCategory &&
 		(isSecondaryDisabled || formData.secondaryCategory) &&
-		formData.costCenter &&
 		formData.title.trim() &&
 		formData.description.trim();
 
@@ -185,29 +166,6 @@ export default function RequestForm() {
 									</SelectTrigger>
 									<SelectContent>
 										{secondaryOptions.map(option => (
-											<SelectItem
-												key={option.value}
-												value={option.value}
-											>
-												{option.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-
-							{/* Cost Center Selector */}
-							<div className="space-y-2">
-								<Label htmlFor="cost-center">Cost Center</Label>
-								<Select
-									value={formData.costCenter}
-									onValueChange={handleCostCenterChange}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="Select a cost center" />
-									</SelectTrigger>
-									<SelectContent>
-										{costCenterData.map(option => (
 											<SelectItem
 												key={option.value}
 												value={option.value}
