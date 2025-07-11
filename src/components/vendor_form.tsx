@@ -22,7 +22,7 @@ export default function VendorForm() {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="w-full max-w-2xl mx-auto p-6 bg-white rounded-xl shadow space-y-6"
+			className="w-full p-6 bg-white rounded-xl shadow space-y-6"
 		>
 			<h2 className="text-xl font-semibold text-blue-600">
 				Vendor Details Form
