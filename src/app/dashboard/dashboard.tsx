@@ -1,6 +1,7 @@
 "use client";
 
 import Chatbot from "@/components/chatbot";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Request {
@@ -20,7 +21,7 @@ export default function Dashboard() {
 
 	// ✅ Mobile chatbot modal toggle
 	const [showChatbotMobile, setShowChatbotMobile] = useState(false);
-
+	const router = useRouter();
 	const createNewRequest = () => {
 		const newId = requests.length + 1;
 		const newRequest = {
@@ -28,6 +29,8 @@ export default function Dashboard() {
 			title: `Request ${String.fromCharCode(64 + newId)}`,
 			description: `Auto-generated request ${newId}`,
 		};
+
+		router.push("/create");
 		setRequests([...requests, newRequest]);
 	};
 
