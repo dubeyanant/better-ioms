@@ -3,7 +3,7 @@
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
-import React from "react";
+import React, { useState } from "react";
 
 const RequestDetailsPage = () => {
 	// 📦 Replace these with real data (from props, context, or API)
@@ -36,6 +36,8 @@ const RequestDetailsPage = () => {
 		},
 		{ stage: "Stage 3", approver: "", time: "", status: "Pending" },
 	];
+
+	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
 
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 space-y-8">
@@ -85,12 +87,10 @@ const RequestDetailsPage = () => {
 				<h2 className="text-xl font-semibold text-blue-600 mb-4">
 					Upload Quotations
 				</h2>
-				<UploadAnalyze />
+				<UploadAnalyze uploadFiles={setFilesUploadedProp} />
 			</section>
 
-			<section>
-				<VendorForm />
-			</section>
+			<section>{areFilesUploaded && <VendorForm />}</section>
 
 			{/* Section 3: Approval Timeline */}
 			<section className="bg-white shadow rounded-lg p-6">
