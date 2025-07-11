@@ -41,19 +41,17 @@ import {
 	YAxis,
 } from "recharts";
 
-// Enhanced financial data with precise amounts
+// Enhanced financial data
 const budgetData = [
 	{
 		name: "Utilized",
 		value: 48.75,
-		exactAmount: 4875000000, // 48.75 crores in rupees
 		fill: "hsl(220, 70%, 50%)",
 		description: "Amount spent across all IT departments",
 	},
 	{
 		name: "Remaining",
 		value: 101.25,
-		exactAmount: 10125000000, // 101.25 crores in rupees
 		fill: "hsl(160, 60%, 45%)",
 		description: "Available budget for remaining period",
 	},
@@ -63,7 +61,6 @@ const departmentSpending = [
 	{
 		department: "IT-Production",
 		amount: 12.45,
-		exactAmount: 1245000000,
 		percentage: 25.5,
 		projects: 8,
 		status: "On Track",
@@ -72,7 +69,6 @@ const departmentSpending = [
 	{
 		department: "IT-Security",
 		amount: 8.92,
-		exactAmount: 892000000,
 		percentage: 18.3,
 		projects: 5,
 		status: "Under Budget",
@@ -81,7 +77,6 @@ const departmentSpending = [
 	{
 		department: "IT-Backoffice",
 		amount: 10.33,
-		exactAmount: 1033000000,
 		percentage: 21.2,
 		projects: 6,
 		status: "On Track",
@@ -90,7 +85,6 @@ const departmentSpending = [
 	{
 		department: "IT-Channel",
 		amount: 6.78,
-		exactAmount: 678000000,
 		percentage: 13.9,
 		projects: 4,
 		status: "Over Budget",
@@ -99,7 +93,6 @@ const departmentSpending = [
 	{
 		department: "IT-Trading",
 		amount: 7.15,
-		exactAmount: 715000000,
 		percentage: 14.7,
 		projects: 3,
 		status: "On Track",
@@ -108,7 +101,6 @@ const departmentSpending = [
 	{
 		department: "IT-Middleware",
 		amount: 3.12,
-		exactAmount: 312000000,
 		percentage: 6.4,
 		projects: 2,
 		status: "Under Budget",
@@ -121,7 +113,6 @@ const monthlyTrends = [
 	{
 		month: "Sep 2023",
 		spending: 5.85,
-		exactAmount: 585000000,
 		budget: 7.2,
 		variance: -1.35,
 		transactions: 1247,
@@ -129,7 +120,6 @@ const monthlyTrends = [
 	{
 		month: "Oct 2023",
 		spending: 6.92,
-		exactAmount: 692000000,
 		budget: 7.2,
 		variance: -0.28,
 		transactions: 1389,
@@ -137,7 +127,6 @@ const monthlyTrends = [
 	{
 		month: "Nov 2023",
 		spending: 7.45,
-		exactAmount: 745000000,
 		budget: 7.2,
 		variance: 0.25,
 		transactions: 1456,
@@ -145,7 +134,6 @@ const monthlyTrends = [
 	{
 		month: "Dec 2023",
 		spending: 8.73,
-		exactAmount: 873000000,
 		budget: 8.5,
 		variance: 0.23,
 		transactions: 1678,
@@ -153,7 +141,6 @@ const monthlyTrends = [
 	{
 		month: "Jan 2024",
 		spending: 6.28,
-		exactAmount: 628000000,
 		budget: 6.8,
 		variance: -0.52,
 		transactions: 1123,
@@ -161,7 +148,6 @@ const monthlyTrends = [
 	{
 		month: "Feb 2024",
 		spending: 7.15,
-		exactAmount: 715000000,
 		budget: 7.0,
 		variance: 0.15,
 		transactions: 1334,
@@ -169,7 +155,6 @@ const monthlyTrends = [
 	{
 		month: "Mar 2024",
 		spending: 5.89,
-		exactAmount: 589000000,
 		budget: 6.5,
 		variance: -0.61,
 		transactions: 1089,
@@ -177,7 +162,6 @@ const monthlyTrends = [
 	{
 		month: "Apr 2024",
 		spending: 8.34,
-		exactAmount: 834000000,
 		budget: 8.0,
 		variance: 0.34,
 		transactions: 1567,
@@ -185,7 +169,6 @@ const monthlyTrends = [
 	{
 		month: "May 2024",
 		spending: 6.97,
-		exactAmount: 697000000,
 		budget: 7.2,
 		variance: -0.23,
 		transactions: 1298,
@@ -193,7 +176,6 @@ const monthlyTrends = [
 	{
 		month: "Jun 2024",
 		spending: 7.56,
-		exactAmount: 756000000,
 		budget: 7.5,
 		variance: 0.06,
 		transactions: 1445,
@@ -201,7 +183,6 @@ const monthlyTrends = [
 	{
 		month: "Jul 2024",
 		spending: 8.12,
-		exactAmount: 812000000,
 		budget: 8.0,
 		variance: 0.12,
 		transactions: 1523,
@@ -209,7 +190,6 @@ const monthlyTrends = [
 	{
 		month: "Aug 2024",
 		spending: 6.49,
-		exactAmount: 649000000,
 		budget: 6.8,
 		variance: -0.31,
 		transactions: 1267,
@@ -218,9 +198,7 @@ const monthlyTrends = [
 
 const currentMonthComparison = {
 	currentMonth: 6.49,
-	currentMonthExact: 649000000,
 	lastYear: 5.85,
-	lastYearExact: 585000000,
 	change: 10.94,
 	isIncrease: true,
 	absoluteDifference: 64000000,
@@ -237,10 +215,6 @@ const CustomPieTooltip = ({ active, payload }: any) => {
 				<div className="mt-2 space-y-1">
 					<p className="text-lg font-bold text-blue-600">
 						₹{data.value} Crores
-					</p>
-					<p className="text-xs text-gray-500">
-						Exact Amount: ₹
-						{data.exactAmount.toLocaleString("en-IN")}
 					</p>
 					<p className="text-xs text-gray-500">
 						{((data.value / 150) * 100).toFixed(1)}% of total budget
@@ -266,14 +240,6 @@ const CustomLineTooltip = ({ active, payload, label }: any) => {
 						</span>
 						<span className="font-bold text-blue-600">
 							₹{data.spending} Cr
-						</span>
-					</div>
-					<div className="flex justify-between items-center">
-						<span className="text-sm text-gray-600">
-							Exact Amount:
-						</span>
-						<span className="text-xs text-gray-500">
-							₹{data.exactAmount.toLocaleString("en-IN")}
 						</span>
 					</div>
 					<div className="flex justify-between items-center">
@@ -366,10 +332,7 @@ export default function FinancialDashboard() {
 						</CardTitle>
 						<CardDescription>
 							Total Budget: ₹{totalBudget} Crore | Utilized: ₹
-							{utilizedBudget} Crore | Exact Utilized: ₹
-							{(utilizedBudget * 10000000).toLocaleString(
-								"en-IN",
-							)}
+							{utilizedBudget} Crore
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -444,12 +407,6 @@ export default function FinancialDashboard() {
 									<span className="text-3xl font-bold text-blue-900">
 										₹{currentMonthComparison.currentMonth}Cr
 									</span>
-									<p className="text-xs text-blue-600">
-										Exact: ₹
-										{currentMonthComparison.currentMonthExact.toLocaleString(
-											"en-IN",
-										)}
-									</p>
 								</div>
 							</div>
 
@@ -466,12 +423,6 @@ export default function FinancialDashboard() {
 									<span className="text-2xl font-semibold text-gray-700">
 										₹{currentMonthComparison.lastYear}Cr
 									</span>
-									<p className="text-xs text-gray-500">
-										Exact: ₹
-										{currentMonthComparison.lastYearExact.toLocaleString(
-											"en-IN",
-										)}
-									</p>
 								</div>
 							</div>
 						</div>
@@ -644,9 +595,6 @@ export default function FinancialDashboard() {
 										Amount (₹ Crores)
 									</TableHead>
 									<TableHead className="text-right font-bold">
-										Exact Amount (₹)
-									</TableHead>
-									<TableHead className="text-right font-bold">
 										Percentage
 									</TableHead>
 									<TableHead className="text-center font-bold">
@@ -673,12 +621,6 @@ export default function FinancialDashboard() {
 										</TableCell>
 										<TableCell className="text-right font-semibold">
 											₹{dept.amount}
-										</TableCell>
-										<TableCell className="text-right text-sm text-gray-600">
-											₹
-											{dept.exactAmount.toLocaleString(
-												"en-IN",
-											)}
 										</TableCell>
 										<TableCell className="text-right">
 											{dept.percentage}%
@@ -713,12 +655,6 @@ export default function FinancialDashboard() {
 									</TableCell>
 									<TableCell className="text-right font-bold">
 										₹{utilizedBudget}
-									</TableCell>
-									<TableCell className="text-right font-bold text-sm">
-										₹
-										{(
-											utilizedBudget * 10000000
-										).toLocaleString("en-IN")}
 									</TableCell>
 									<TableCell className="text-right font-bold">
 										100.0%
