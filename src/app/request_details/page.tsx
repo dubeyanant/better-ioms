@@ -3,6 +3,7 @@
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
+import { WorkflowStage } from "@/lib/utils";
 import React, { useState } from "react";
 
 const RequestDetailsPage = () => {
@@ -83,13 +84,7 @@ const RequestDetailsPage = () => {
 					Workflow Progress
 				</h2>
 				<WorkflowStatus
-					stages={[
-						"Request",
-						"Proofreading",
-						"Processing",
-						"Purchase Order",
-					]}
-					currentStage={"Processing"}
+					currentStage={WorkflowStage.QUOTATION_UPLOADED}
 				/>
 			</section>
 

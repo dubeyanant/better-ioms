@@ -1,19 +1,26 @@
+import { WorkflowStage } from "@/lib/utils";
 import { CheckCircle2, Circle } from "lucide-react";
 
 interface WorkflowStatusProps {
-	stages: string[];
-	currentStage: string;
+	currentStage: WorkflowStage;
 }
 
-export default function WorkflowStatus({
-	stages,
-	currentStage,
-}: WorkflowStatusProps) {
+const STAGES = [
+	WorkflowStage.REQUEST_CREATED,
+	WorkflowStage.REVIEWED,
+	WorkflowStage.QUOTATION_UPLOADED,
+	WorkflowStage.APPROVED,
+	WorkflowStage.IOM_GENERATED,
+];
+
+export default function WorkflowStatus({ currentStage }: WorkflowStatusProps) {
 	return (
 		<div className="flex flex-col sm:flex-row items-center sm:space-x-8 space-y-8 sm:space-y-0 relative">
-			{stages.map((stage, index) => {
-				const isCompleted = stages.indexOf(currentStage) > index;
-				const isCurrent = stages.indexOf(currentStage) === index;
+			{STAGES.map((stage, index) => {
+				const isClosed = currentStage === WorkflowStage.CLOSED;
+				const isCompleted =
+					isClosed || STAGES.indexOf(currentStage) > index;
+				const isCurrent = STAGES.indexOf(currentStage) === index;
 
 				return (
 					<div
