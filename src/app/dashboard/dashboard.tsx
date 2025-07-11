@@ -12,8 +12,8 @@ interface Request {
 
 export default function Dashboard() {
 	const [requests, setRequests] = useState<Request[]>([
-		{ id: 1, title: "Request A", description: "Initial test request A" },
-		{ id: 2, title: "Request B", description: "Initial test request B" },
+		{ id: 1, title: "Ticket ID: 1", description: "Pending" },
+		{ id: 2, title: "Ticket ID: 2", description: "Completed" },
 	]);
 
 	// ✅ Toggle this to false to hide all chatbot logic
@@ -26,13 +26,17 @@ export default function Dashboard() {
 		const newId = requests.length + 1;
 		const newRequest = {
 			id: newId,
-			title: `Request ${String.fromCharCode(64 + newId)}`,
-			description: `Auto-generated request ${newId}`,
+			title: `Ticket ID: ${String.fromCharCode(64 + newId)}`,
+			description: `Processing`,
 		};
 
 		router.push("/create");
 		setRequests([...requests, newRequest]);
 	};
+
+	function handleRequestClick(id: number): void {
+		router.push(`/request_details`);
+	}
 
 	return (
 		<div className="relative h-screen flex flex-col sm:flex-row">
@@ -65,7 +69,9 @@ export default function Dashboard() {
 						{requests.map(req => (
 							<div
 								key={req.id}
-								className="bg-white p-4 rounded-lg shadow hover:shadow-md transition"
+								onClick={() => handleRequestClick(req.id)}
+								className="bg-white p-4 rounded-lg shadow hover:shadow-md transition
+								"
 							>
 								<h3 className="text-md font-semibold text-gray-700">
 									{req.title}
