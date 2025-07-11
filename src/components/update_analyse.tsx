@@ -31,6 +31,7 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 		setIsUploading(true); // Start loader
 		try {
 			const formData = new FormData();
+			formData.append("imoRequestId", "123456");
 			files.forEach(file => {
 				formData.append("files", file); // backend accepts multiple files under 'files'
 			});

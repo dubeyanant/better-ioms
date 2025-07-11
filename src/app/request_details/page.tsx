@@ -39,6 +39,16 @@ const RequestDetailsPage = () => {
 
 	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
 
+	const handleGenerateIOM = () => {
+		console.log("✅ Generating IOM...");
+		// Add logic to generate IOM
+	};
+
+	const handleCloseTicket = () => {
+		console.log("❌ Closing ticket...");
+		// Add logic to close the ticket
+	};
+
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 space-y-8">
 			{/* Section 1: Request Info */}
@@ -109,6 +119,29 @@ const RequestDetailsPage = () => {
 						),
 					)}
 				</ul>
+			</section>
+
+			{/* ...Other sections like Request Details, Upload, Approval, etc... */}
+
+			{/* ✅ Final Section with Buttons */}
+			<section className="bg-white shadow rounded-lg p-6">
+				<h2 className="text-xl font-semibold text-blue-600 mb-4">
+					Final Actions
+				</h2>
+				<div className="flex justify-center gap-4">
+					<button
+						onClick={handleGenerateIOM}
+						className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+					>
+						Generate IOM
+					</button>
+					<button
+						onClick={handleCloseTicket}
+						className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
+					>
+						Close Ticket
+					</button>
+				</div>
 			</section>
 		</div>
 	);
