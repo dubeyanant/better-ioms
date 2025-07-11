@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Variants, motion } from "framer-motion";
 import { Pacifico } from "next/font/google";
 import Image from "next/image";
+import Link from "next/link";
 
 const pacifico = Pacifico({
 	subsets: ["latin"],
@@ -210,9 +211,12 @@ export default function HeroGeometric({
 						initial="hidden"
 						animate="visible"
 					>
-						<button className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gradient-to-r from-indigo-500 to-rose-500 rounded-full hover:from-indigo-600 hover:to-rose-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+						<Link
+							href="/login"
+							className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gradient-to-r from-indigo-500 to-rose-500 rounded-full hover:from-indigo-600 hover:to-rose-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+						>
 							Proceed
-						</button>
+						</Link>
 					</motion.div>
 				</div>
 			</div>
