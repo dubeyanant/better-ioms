@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { WorkflowProvider } from "@/lib/workflow-context";
 
 const inter = Inter({
 	variable: "--font-inter",
@@ -26,7 +27,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className="font-body antialiased">
-				<AuthProvider>{children}</AuthProvider>
+				<AuthProvider>
+					<WorkflowProvider>{children}</WorkflowProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);

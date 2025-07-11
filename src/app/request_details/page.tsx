@@ -4,10 +4,14 @@ import ActionButtons from "@/components/ui/ActionButtons";
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
-import { WorkflowStage } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import { UserRole, WorkflowStage } from "@/lib/utils";
+import { useWorkflow } from "@/lib/workflow-context";
 import React, { useState } from "react";
 
 const RequestDetailsPage = () => {
+	const { user } = useAuth();
+	const { currentStage } = useWorkflow();
 	// 📦 Replace these with real data (from props, context, or API)
 	const requestCreatedBy = "John Doe";
 	const department = "IT Department";
@@ -84,25 +88,33 @@ const RequestDetailsPage = () => {
 				<h2 className="text-xl font-semibold text-blue-600 mb-4">
 					Workflow Progress
 				</h2>
-				<WorkflowStatus
-					currentStage={WorkflowStage.QUOTATION_UPLOADED}
-				/>
+				<WorkflowStatus currentStage={currentStage} />
 			</section>
 
-			<section className="bg-white shadow rounded-lg p-6">
-				<h2 className="text-xl font-semibold text-blue-600 mb-4">
-					Upload Quotations
-				</h2>
-				<UploadAnalyze uploadFiles={setFilesUploadedProp} />
-			</section>
+			{/* Section 3: Upload Quotations */}
+			{currentStage === WorkflowStage.QUOTATION_UPLOADED && (
+				<>
+					<section className="bg-white shadow rounded-lg p-6">
+						<h2 className="text-xl font-semibold text-blue-600 mb-4">
+							Upload Quotations
+						</h2>
+						<UploadAnalyze uploadFiles={setFilesUploadedProp} />
+					</section>
 
-			<section>{areFilesUploaded && <VendorForm />}</section>
+					<section>{areFilesUploaded && <VendorForm />}</section>
+				</>
+			)}
 
-			<section>
-				<ActionButtons />
-			</section>
+			{/* Section 4: Take an Action */}
+			{(user?.role === UserRole.AVP || user?.role === UserRole.CTO) &&
+				(currentStage === WorkflowStage.REVIEWED ||
+					currentStage === WorkflowStage.APPROVED) && (
+					<section>
+						<ActionButtons />
+					</section>
+				)}
 
-			{/* Section 3: Approval Timeline */}
+			{/* Section 5: Approval Timeline */}
 			<section className="bg-white shadow rounded-lg p-6">
 				<h2 className="text-xl font-semibold text-blue-600 mb-4">
 					Approval Timeline
@@ -121,28 +133,28 @@ const RequestDetailsPage = () => {
 				</ul>
 			</section>
 
-			{/* ...Other sections like Request Details, Upload, Approval, etc... */}
-
-			{/* ✅ Final Section with Buttons */}
-			<section className="bg-white shadow rounded-lg p-6">
-				<h2 className="text-xl font-semibold text-blue-600 mb-4">
-					Final Actions
-				</h2>
-				<div className="flex justify-center gap-4">
-					<button
-						onClick={handleGenerateIOM}
-						className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
-					>
-						Generate IOM
-					</button>
-					<button
-						onClick={handleCloseTicket}
-						className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-					>
-						Close Ticket
-					</button>
-				</div>
-			</section>
+			{/* Section 6: Final Actions */}
+			{currentStage === WorkflowStage.IOM_GENERATED && (
+				<section className="bg-white shadow rounded-lg p-6">
+					<h2 className="text-xl font-semibold text-blue-600 mb-4">
+						Final Actions
+					</h2>
+					<div className="flex justify-center gap-4">
+						<button
+							onClick={handleGenerateIOM}
+							className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+						>
+							Generate IOM
+						</button>
+						<button
+							onClick={handleCloseTicket}
+							className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
+						>
+							Close Ticket
+						</button>
+					</div>
+				</section>
+			)}
 		</div>
 	);
 };
