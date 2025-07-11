@@ -1,6 +1,7 @@
 "use client";
 
 import Chatbot from "@/components/chatbot"; // adjust path if needed
+import api from "@/lib/api";
 import { useRef, useState } from "react";
 
 type UploadAnalyzeProps = {
@@ -13,6 +14,7 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 	const [areFilesUploaded, setFilesUploaded] = useState(false);
 	const [showChatbot, setShowChatbot] = useState(false);
 	const [chatbotMessage, setChatbotMessage] = useState("");
+	const [isUploading, setIsUploading] = useState(false);
 
 	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
@@ -25,34 +27,66 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 	};
 
 	const handleUpload = async () => {
-		console.log("Uploading to server:", files);
+		if (files.length < 3) return;
+		setIsUploading(true); // Start loader
+		try {
+			const formData = new FormData();
+			files.forEach(file => {
+				formData.append("files", file); // backend accepts multiple files under 'files'
+			});
 
-		const fileByteArrays = await Promise.all(
-			files.map(file => {
-				return new Promise<Uint8Array>((resolve, reject) => {
-					const reader = new FileReader();
-					reader.onload = () => {
-						const arrayBuffer = reader.result as ArrayBuffer;
-						resolve(new Uint8Array(arrayBuffer));
-					};
-					reader.onerror = () => reject(reader.error);
-					reader.readAsArrayBuffer(file);
-				});
-			}),
-		);
+			const response = await api.post("files/upload", formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
 
-		console.log("Byte arrays for upload:", fileByteArrays);
-
-		setFilesUploaded(true);
-		uploadFiles(true);
+			console.log("Upload successful:", response);
+			if (response && (response as any).status === 200) {
+				console.log("✅ Upload successful:", response);
+				setFilesUploaded(true);
+				uploadFiles(true);
+			} else {
+				console.error(
+					"❌ Upload failed with status:",
+					(response as any).status,
+				);
+			}
+		} catch (error) {
+			console.error("Upload failed:", error);
+		} finally {
+			setIsUploading(false); // Stop loader
+		}
 	};
-
-	const handleAnalyze = () => {
+	const handleAnalyze = async () => {
 		console.log("Analyzing files:", files);
-		setChatbotMessage(
-			"📊 Analysis complete! Here's the summary of findings...",
-		);
-		setShowChatbot(true);
+
+		try {
+			// Convert files to byte arrays
+			const fileByteArrays = await Promise.all(
+				files.map(file => {
+					return new Promise<Uint8Array>((resolve, reject) => {
+						const reader = new FileReader();
+						reader.onload = () => {
+							const arrayBuffer = reader.result as ArrayBuffer;
+							resolve(new Uint8Array(arrayBuffer));
+						};
+						reader.onerror = () => reject(reader.error);
+						reader.readAsArrayBuffer(file);
+					});
+				}),
+			);
+
+			// Send POST request with byte arrays
+			const response = await api.post("/files", {
+				files: fileByteArrays,
+			});
+
+			console.log("Analysis result:", response);
+			// Optionally update UI with response
+		} catch (error) {
+			console.error("Analysis failed:", error);
+		}
 	};
 
 	return (
@@ -94,14 +128,14 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 				<button
 					type="button"
 					onClick={handleUpload}
-					disabled={files.length < 3}
+					disabled={files.length < 3 || isUploading}
 					className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
-						files.length >= 3
+						files.length >= 3 && !isUploading
 							? "bg-green-600 text-white hover:bg-green-700"
 							: "bg-gray-300 text-gray-500 cursor-not-allowed"
 					}`}
 				>
-					Upload
+					{isUploading ? "Uploading..." : "Upload"}
 				</button>
 
 				<button
