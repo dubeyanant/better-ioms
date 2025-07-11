@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { post } from "@/lib/api";
+import { type User, useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -18,13 +19,18 @@ export function LoginForm({
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
+	const { setUser } = useAuth();
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setLoading(true);
 		try {
 			const response = await post<
-				any,
+				{
+					message: string;
+					status: number;
+					data: User;
+				},
 				{ username: string; password: string }
 			>("auth/login", { username: email, password });
 			console.log("Login response:", response);
@@ -33,6 +39,7 @@ export function LoginForm({
 				response.status === 200 &&
 				response.message === "success"
 			) {
+				setUser(response.data);
 				router.push("/dashboard");
 			}
 			// You can handle success (e.g., redirect, show message) here
