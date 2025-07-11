@@ -20,6 +20,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { post } from "@/lib/api";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // Sample data structure - replace with your actual data
@@ -53,6 +55,8 @@ interface FormData {
 }
 
 export default function RequestForm() {
+	const router = useRouter();
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [formData, setFormData] = useState<FormData>({
 		primaryCategory: "",
 		secondaryCategory: "",
@@ -82,10 +86,38 @@ export default function RequestForm() {
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Form submitted:", formData);
-		// Handle form submission here
+		if (!isFormValid) {
+			return;
+		}
+		setIsSubmitting(true);
+		const requestData = {
+			title: formData.title,
+			category: formData.primaryCategory,
+			sub_category: formData.secondaryCategory,
+			desc: formData.description,
+		};
+		try {
+			const response = await post<{
+				message: string;
+				status: number;
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				data: any[];
+			}>("iom-create", requestData);
+
+			if (response.status === 200) {
+				alert(response.message);
+				router.push("/request_details");
+			} else {
+				alert(`Error: ${response.message}`);
+			}
+		} catch (error) {
+			console.error("Submission error:", error);
+			alert("An unexpected error occurred. Please try again later.");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const secondaryOptions = formData.primaryCategory
@@ -222,9 +254,11 @@ export default function RequestForm() {
 							<Button
 								type="submit"
 								className="w-full"
-								disabled={!isFormValid}
+								disabled={!isFormValid || isSubmitting}
 							>
-								Create Request
+								{isSubmitting
+									? "Creating Request..."
+									: "Create Request"}
 							</Button>
 						</form>
 					</CardContent>
