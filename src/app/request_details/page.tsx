@@ -2,6 +2,7 @@
 
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
+import VendorForm from "@/components/vendor_form";
 import React from "react";
 
 const RequestDetailsPage = () => {
@@ -85,6 +86,10 @@ const RequestDetailsPage = () => {
 					Upload Quotations
 				</h2>
 				<UploadAnalyze />
+			</section>
+
+			<section>
+				<VendorForm />
 			</section>
 
 			{/* Section 3: Approval Timeline */}
