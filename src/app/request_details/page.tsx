@@ -1,6 +1,7 @@
 "use client";
 
 import WorkflowStatus from "@/components/ui/status_workflow";
+import UploadAnalyze from "@/components/update_analyse";
 import React from "react";
 
 const RequestDetailsPage = () => {
@@ -77,6 +78,13 @@ const RequestDetailsPage = () => {
 					]}
 					currentStage={"Processing"}
 				/>
+			</section>
+
+			<section className="bg-white shadow rounded-lg p-6">
+				<h2 className="text-xl font-semibold text-blue-600 mb-4">
+					Upload Quotations
+				</h2>
+				<UploadAnalyze />
 			</section>
 
 			{/* Section 3: Approval Timeline */}
