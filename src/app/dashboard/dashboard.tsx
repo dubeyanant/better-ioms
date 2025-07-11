@@ -5,7 +5,7 @@ import FinancialDashboard from "@/components/financial-dashboard";
 import { useAuth } from "@/lib/auth-context";
 import { UserRole } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Request {
 	id: number;
@@ -19,6 +19,11 @@ export default function Dashboard() {
 		{ id: 1, title: "Ticket ID: 1", description: "Pending" },
 		{ id: 2, title: "Ticket ID: 2", description: "Completed" },
 	]);
+	const [isClient, setIsClient] = useState(false);
+
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
 	// ✅ Toggle this to false to hide all chatbot logic
 	const showChatBotOn = true;
@@ -42,11 +47,12 @@ export default function Dashboard() {
 		router.push(`/request_details`);
 	}
 
+	console.log(user?.role);
 	return (
 		<div>
-			{(user?.role === UserRole.CEO || user?.role === UserRole.CTO) && (
-				<FinancialDashboard />
-			)}
+			{isClient &&
+				(user?.role === UserRole.CEO ||
+					user?.role === UserRole.CTO) && <FinancialDashboard />}
 			<div className="relative h-screen flex flex-col sm:flex-row">
 				{/* 🧱 Left section: Dashboard */}
 				<div
@@ -54,7 +60,7 @@ export default function Dashboard() {
 						showChatBotOn ? "w-full sm:w-[70%]" : "w-full"
 					}`}
 				>
-					{user?.role === UserRole.ASSOCIATE && (
+					{isClient && user?.role === UserRole.ASSOCIATE && (
 						<div className="mb-6">
 							<h2 className="text-xl font-semibold text-gray-800">
 								Create a request
