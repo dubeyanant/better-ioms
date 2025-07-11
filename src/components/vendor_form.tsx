@@ -8,16 +8,34 @@ export default function VendorForm() {
 	const [selectedRadio, setSelectedRadio] = useState("");
 	const [justification, setJustification] = useState("");
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Do something with the form values
-		console.log({
+
+		const payload = {
 			vendorName,
 			selectedOption,
 			selectedRadio,
 			justification,
-		});
+		};
+
+		// ✅ Just print in console
+		console.log("Form submitted data: ", payload);
+
+		// ✅ Optionally: clear the form
+		setVendorName("");
+		setSelectedOption("");
+		setSelectedRadio("");
+		setJustification("");
 	};
+
+	const approvers = [
+		"IT-Production - Arun Kp",
+		"IT-Security - Amit Jaokar",
+		"IT-Backoffice - Mehul Vora",
+		"IT-Channel - Ashokraj",
+		"IT-Trading - Rizwan",
+		"IT-Middleware - Shatish Babu",
+	];
 
 	return (
 		<form
@@ -45,7 +63,7 @@ export default function VendorForm() {
 			{/* Dropdown */}
 			<div>
 				<label className="block text-sm font-medium text-gray-700 mb-1">
-					Select Option
+					Select Approver
 				</label>
 				<select
 					value={selectedOption}
@@ -53,9 +71,11 @@ export default function VendorForm() {
 					className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
 				>
 					<option value="">-- Select --</option>
-					<option value="option1">Procurement</option>
-					<option value="option2">Logistics</option>
-					<option value="option3">Maintenance</option>
+					{approvers.map((name, index) => (
+						<option key={index} value={name}>
+							{name}
+						</option>
+					))}
 				</select>
 			</div>
 
@@ -64,38 +84,36 @@ export default function VendorForm() {
 				<label className="block text-sm font-medium text-gray-700 mb-2">
 					Select Category
 				</label>
-				<div className="flex gap-4">
+				<div className="flex gap-4 flex-wrap">
 					<label className="flex items-center gap-2">
 						<input
 							type="radio"
 							name="category"
-							value="local"
-							checked={selectedRadio === "local"}
+							value="L1"
+							checked={selectedRadio === "L1"}
 							onChange={e => setSelectedRadio(e.target.value)}
 						/>
-						<span className="text-gray-700 text-sm">Local</span>
+						<span className="text-gray-700 text-sm">L1</span>
 					</label>
 					<label className="flex items-center gap-2">
 						<input
 							type="radio"
 							name="category"
-							value="national"
-							checked={selectedRadio === "national"}
+							value="L2"
+							checked={selectedRadio === "L2"}
 							onChange={e => setSelectedRadio(e.target.value)}
 						/>
-						<span className="text-gray-700 text-sm">National</span>
+						<span className="text-gray-700 text-sm">L2</span>
 					</label>
 					<label className="flex items-center gap-2">
 						<input
 							type="radio"
 							name="category"
-							value="international"
-							checked={selectedRadio === "international"}
+							value="L3"
+							checked={selectedRadio === "L3"}
 							onChange={e => setSelectedRadio(e.target.value)}
 						/>
-						<span className="text-gray-700 text-sm">
-							International
-						</span>
+						<span className="text-gray-700 text-sm">L3</span>
 					</label>
 				</div>
 			</div>
