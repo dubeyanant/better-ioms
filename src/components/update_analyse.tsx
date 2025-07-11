@@ -1,5 +1,6 @@
 "use client";
 
+import Chatbot from "@/components/chatbot"; // adjust path if needed
 import { useRef, useState } from "react";
 
 type UploadAnalyzeProps = {
@@ -10,6 +11,8 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 	const [files, setFiles] = useState<File[]>([]);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [areFilesUploaded, setFilesUploaded] = useState(false);
+	const [showChatbot, setShowChatbot] = useState(false);
+	const [chatbotMessage, setChatbotMessage] = useState("");
 
 	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
@@ -21,15 +24,35 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 		fileInputRef.current?.click();
 	};
 
-	const handleUpload = () => {
-		// Replace with actual upload logic
+	const handleUpload = async () => {
 		console.log("Uploading to server:", files);
+
+		const fileByteArrays = await Promise.all(
+			files.map(file => {
+				return new Promise<Uint8Array>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => {
+						const arrayBuffer = reader.result as ArrayBuffer;
+						resolve(new Uint8Array(arrayBuffer));
+					};
+					reader.onerror = () => reject(reader.error);
+					reader.readAsArrayBuffer(file);
+				});
+			}),
+		);
+
+		console.log("Byte arrays for upload:", fileByteArrays);
+
 		setFilesUploaded(true);
-		uploadFiles(true); // ✅ correctly update parent state
+		uploadFiles(true);
 	};
 
 	const handleAnalyze = () => {
 		console.log("Analyzing files:", files);
+		setChatbotMessage(
+			"📊 Analysis complete! Here's the summary of findings...",
+		);
+		setShowChatbot(true);
 	};
 
 	return (
@@ -78,7 +101,7 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 							: "bg-gray-300 text-gray-500 cursor-not-allowed"
 					}`}
 				>
-					Upload to Server
+					Upload
 				</button>
 
 				<button
@@ -94,6 +117,21 @@ export default function UploadAnalyze({ uploadFiles }: UploadAnalyzeProps) {
 					Analyze
 				</button>
 			</div>
+
+			{/* 🧠 Chatbot Modal */}
+			{showChatbot && (
+				<div className="fixed inset-0 z-50 bg-white/70 flex items-center justify-center">
+					<div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl">
+						<button
+							className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+							onClick={() => setShowChatbot(false)}
+						>
+							✖
+						</button>
+						<Chatbot initialMessage={chatbotMessage} />
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

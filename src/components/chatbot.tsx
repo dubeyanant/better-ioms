@@ -8,12 +8,18 @@ interface Message {
 	text: string;
 }
 
-export default function Chatbot() {
+interface ChatbotProps {
+	initialMessage?: string;
+}
+
+export default function Chatbot({
+	initialMessage = "Hello! How can I help you today?",
+}: ChatbotProps) {
 	const [messages, setMessages] = useState<Message[]>([
 		{
 			id: crypto.randomUUID(),
 			role: "bot",
-			text: "Hello! How can I help you today?",
+			text: initialMessage,
 		},
 	]);
 
@@ -45,7 +51,7 @@ export default function Chatbot() {
 	}, [messages]);
 
 	return (
-		<div className="w-full h-full flex flex-col bg-white shadow-2xl">
+		<div className="w-full h-full flex flex-col bg-white shadow-2xl rounded-xl">
 			<header className="text-lg font-semibold text-center text-blue-600 py-4 border-b border-gray-200">
 				🤖 Chatbot
 			</header>
