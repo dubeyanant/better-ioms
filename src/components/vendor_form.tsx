@@ -67,7 +67,7 @@ export default function VendorForm({ requestID, onFormSubmit }: Props) {
 
 		try {
 			const resp = post(
-				"https://n8n.dimensiontwo.dev/webhook-test/532a8c8e-c90e-440b-8dfb-4dcc2c260ee1",
+				"https://n8n.dimensiontwo.dev/webhook/532a8c8e-c90e-440b-8dfb-4dcc2c260ee1",
 				{
 					request_id: { requestID },
 					stage_id: WorkflowStage.QUOTATION_UPLOADED,
