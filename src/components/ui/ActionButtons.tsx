@@ -17,9 +17,9 @@ export default function ActionButtons({ requestId }: ActionButtonsProps) {
 		setIsSubmitting(true);
 		try {
 			await post(`data/update/${requestId}`, { stageId: stageId });
-			if (stageId === "REVIEWED") {
+			if (stageId === "QUOTATION_UPLOADED") {
 				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
-			} else if (stageId === "APPROVED") {
+			} else if (stageId === "IOM_GENERATED") {
 				setCurrentStage(WorkflowStage.IOM_GENERATED);
 			}
 			// Buttons will be disabled after this, unless you want to handle other stages
@@ -37,7 +37,7 @@ export default function ActionButtons({ requestId }: ActionButtonsProps) {
 
 			<div className="flex flex-col sm:flex-row gap-4 w-full">
 				<button
-					onClick={() => handleAction("REVIEWED")}
+					onClick={() => handleAction("QUOTATION_UPLOADED")}
 					disabled={isSubmitting}
 					className="flex-1 min-w-[120px] bg-green-500 hover:bg-green-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
 				>
