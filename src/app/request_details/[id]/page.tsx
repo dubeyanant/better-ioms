@@ -185,7 +185,10 @@ const RequestDetailsPage = () => {
 							<h2 className="text-xl font-semibold text-blue-600 mb-4">
 								Upload Quotations
 							</h2>
-							<UploadAnalyze uploadFiles={setFilesUploadedProp} />
+							<UploadAnalyze
+								uploadFiles={setFilesUploadedProp}
+								requestID={requestDetails.requestId.toString()}
+							/>
 						</section>
 
 						<section>
