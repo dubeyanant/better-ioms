@@ -4,45 +4,96 @@ import ActionButtons from "@/components/ui/ActionButtons";
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
+import { get } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { UserRole, WorkflowStage } from "@/lib/utils";
 import { useWorkflow } from "@/lib/workflow-context";
-import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+
+// Define an interface for the request details
+interface RequestDetails {
+	requestId: number;
+	title: string;
+	category: string;
+	description: string;
+	subCategory: string;
+	requesterId: number;
+	stageId: string;
+	contractParty: string | null;
+	briefDescription: string | null;
+	annexure: string;
+	costCenter: string | null;
+	subCostCenter: string | null;
+	scopeOfWork: string | null; // API sends a single string
+	recommendationAndRationale: string | null;
+	initiatedBy: string | null;
+	reviewedBy: string | null;
+	approvedBy: string | null;
+	formType: string;
+	date: string;
+	orderValue: string | null;
+	l1Name: string;
+	l2Name: string;
+	l3Name: string;
+	l1Price: string;
+	l2Price: string;
+	l3Price: string;
+	l1Total: string;
+	l2Total: string;
+	l3Total: string;
+	amount: string;
+	contractPeriod: string | null;
+	budgeted: string;
+	comparativeCostAnalysis: string | null;
+	roleInitiated: string;
+	toleReview: string;
+	roleApprove: string;
+	cmc: string;
+	rmc: string;
+	tmc: string;
+	selectedVendor: string | null;
+}
+
+interface ApiResponse {
+	message: string;
+	status: number;
+	data: RequestDetails;
+}
 
 const RequestDetailsPage = () => {
 	const { user } = useAuth();
 	const { currentStage } = useWorkflow();
-	const isDone = currentStage === WorkflowStage.CLOSED;
-	// 📦 Replace these with real data (from props, context, or API)
-	const requestCreatedBy = "John Doe";
-	const department = "IT Department";
-	const createdAt = "2025-07-11 10:00 AM";
-	const scopeOfWork = [
-		"Setup VPN access for remote workers.",
-		"Configure firewall rules for new servers.",
-		"Perform security audit and submit report.",
-		"Integrate SSO with internal applications.",
-		"Test deployment scripts on staging environment.",
-		"Migrate legacy systems to new architecture.",
-		"Implement CI/CD pipeline for microservices.",
-		"Schedule weekly reviews with IT head.",
-	];
+	const params = useParams();
+	const id = params.id as string;
 
-	const approvalTimeline = [
-		{
-			stage: "Stage 1",
-			approver: "Jane Smith",
-			time: "2025-07-11 at 11:00 AM",
-			status: "Approved",
-		},
-		{
-			stage: "Stage 2",
-			approver: "Michael Lee",
-			time: "2025-07-11 at 01:30 PM",
-			status: "Approved",
-		},
-		{ stage: "Stage 3", approver: "", time: "", status: "Pending" },
-	];
+	const [requestDetails, setRequestDetails] = useState<RequestDetails | null>(
+		null,
+	);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (id) {
+			const fetchRequestDetails = async () => {
+				try {
+					setLoading(true);
+					const response = await get<ApiResponse>(`data/${id}`);
+					setRequestDetails(response.data);
+				} catch (err) {
+					setError("Failed to fetch request details.");
+					console.error(err);
+				} finally {
+					setLoading(false);
+				}
+			};
+			fetchRequestDetails();
+		}
+	}, [id]);
+
+	const isDone = currentStage === WorkflowStage.CLOSED;
+
+	// 📦 Replace these with real data (from props, context, or API)
 
 	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
 
@@ -56,6 +107,32 @@ const RequestDetailsPage = () => {
 		// Add logic to close the ticket
 	};
 
+	if (loading) {
+		return <div className="min-h-screen bg-gray-50 p-6">Loading...</div>;
+	}
+
+	if (error) {
+		return <div className="min-h-screen bg-gray-50 p-6">{error}</div>;
+	}
+
+	if (!requestDetails) {
+		return (
+			<div className="min-h-screen bg-gray-50 p-6">
+				No request details found.
+			</div>
+		);
+	}
+
+	const {
+		title,
+		description, // Using description as scopeOfWork
+		category,
+	} = requestDetails;
+
+	// The API returns scopeOfWork as a single string, but the UI expects an array.
+	// We'll use the description and split it by newlines for the list display.
+	const scopeOfWorkList = description ? description.split("\\n") : [];
+
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 space-y-8">
 			{/* Section 1: Request Info */}
@@ -65,18 +142,15 @@ const RequestDetailsPage = () => {
 				</h2>
 				<div className="space-y-2 text-gray-700 text-sm">
 					<p>
-						<strong>Request Created By:</strong> {requestCreatedBy}
+						<strong>Request Created By:</strong> associate@ex.com
 					</p>
 					<p>
-						<strong>Department:</strong> {department}
-					</p>
-					<p>
-						<strong>Time:</strong> {createdAt}
+						<strong>Title:</strong> {title}
 					</p>
 					<div>
 						<strong>Scope of Work:</strong>
 						<ul className="list-disc ml-5 mt-1 text-gray-600">
-							{scopeOfWork.map((line, idx) => (
+							{scopeOfWorkList.map((line, idx) => (
 								<li key={idx}>{line}</li>
 							))}
 						</ul>
@@ -115,25 +189,6 @@ const RequestDetailsPage = () => {
 						<ActionButtons />
 					</section>
 				)}
-
-			{/* Section 5: Approval Timeline */}
-			<section className="bg-white shadow rounded-lg p-6">
-				<h2 className="text-xl font-semibold text-blue-600 mb-4">
-					Approval Timeline
-				</h2>
-				<ul className="space-y-3 text-sm text-gray-700">
-					{approvalTimeline.map(
-						({ stage, approver, time, status }, idx) => (
-							<li key={idx}>
-								<strong>{stage}:</strong>{" "}
-								{status === "Pending"
-									? "Pending"
-									: `Approved by ${approver} on ${time}`}
-							</li>
-						),
-					)}
-				</ul>
-			</section>
 
 			{/* Section 6: Final Actions */}
 			{!isDone && currentStage === WorkflowStage.IOM_GENERATED && (

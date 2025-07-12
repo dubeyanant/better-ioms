@@ -95,23 +95,15 @@ export default function RequestForm() {
 		const requestData = {
 			title: formData.title,
 			category: formData.primaryCategory,
-			sub_category: formData.secondaryCategory,
-			desc: formData.description,
+			subCategory: formData.secondaryCategory,
+			description: formData.description,
+			initiatedBy: "associate@ex.com",
 		};
 		try {
 			const response = await post<{
-				message: string;
-				status: number;
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-				data: any[];
-			}>("iom-create", requestData);
-
-			if (response.status === 200) {
-				alert(response.message);
-				router.push("/request_details");
-			} else {
-				alert(`Error: ${response.message}`);
-			}
+				request_id: number;
+			}>("data/new", requestData);
+			router.push(`/request_details/${response.request_id}`);
 		} catch (error) {
 			console.error("Submission error:", error);
 			alert("An unexpected error occurred. Please try again later.");

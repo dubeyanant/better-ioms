@@ -32,7 +32,7 @@ export function LoginForm({
 					data: User;
 				},
 				{ username: string; password: string }
-			>("auth/login", { username: email, password });
+			>("login", { username: email, password });
 			console.log("Login response:", response);
 			if (
 				response &&
