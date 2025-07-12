@@ -58,6 +58,10 @@ export default function ActionButtons({ requestId }: ActionButtonsProps) {
 					Hold
 				</button>
 			</div>
+
+			<p className="text-green-500 text-lg font-medium">
+				💡This is under budget
+			</p>
 		</div>
 	);
 }
