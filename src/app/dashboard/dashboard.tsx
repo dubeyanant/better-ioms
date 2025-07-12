@@ -57,7 +57,7 @@ export default function Dashboard() {
 				{/* 🧱 Left section: Dashboard */}
 				<div
 					className={`p-6 bg-gray-100 overflow-y-auto transition-all duration-300 h-full ${
-						showChatBotOn ? "w-full sm:w-[70%]" : "w-full"
+						showChatBotOn ? "w-full " : "w-full"
 					}`}
 				>
 					{isClient && user?.role === UserRole.ASSOCIATE && (
@@ -102,44 +102,6 @@ export default function Dashboard() {
 				</div>
 
 				{/* 🧱 Right section: Chatbot (only if showChatBotOn = true) */}
-				{showChatBotOn && (
-					<>
-						{/* Desktop Sidebar Chatbot */}
-						<div className="hidden sm:block w-[30%] h-full">
-							<Chatbot />
-						</div>
-
-						{/* FAB on Mobile */}
-						<button
-							type="button"
-							onClick={() => setShowChatbotMobile(true)}
-							className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition sm:hidden"
-						>
-							💬
-						</button>
-
-						{/* Mobile Chatbot Modal */}
-						{showChatbotMobile && (
-							<div className="fixed inset-0 z-40 bg-white flex flex-col sm:hidden">
-								<div className="flex justify-between items-center p-4 border-b text-lg font-semibold text-blue-600">
-									<span>🤖 Chatbot</span>
-									<button
-										type="button"
-										onClick={() =>
-											setShowChatbotMobile(false)
-										}
-										className="text-sm text-blue-500 hover:underline"
-									>
-										Close
-									</button>
-								</div>
-								<div className="flex-1">
-									<Chatbot />
-								</div>
-							</div>
-						)}
-					</>
-				)}
 			</div>
 		</div>
 	);
