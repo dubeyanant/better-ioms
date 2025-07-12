@@ -10,17 +10,17 @@ interface ActionButtonsProps {
 
 export default function ActionButtons({ requestId }: ActionButtonsProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const { setCurrentStage } = useWorkflow();
+	const { setCurrentStage, currentStage } = useWorkflow();
 
 	const handleAction = async (stageId: string) => {
 		if (isSubmitting) return;
 		setIsSubmitting(true);
 		try {
 			await post(`data/update/${requestId}`, { stageId: stageId });
-			if (stageId === "QUOTATION_UPLOADED") {
-				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
-			} else if (stageId === "IOM_GENERATED") {
+			if (currentStage === WorkflowStage.APPROVED) {
 				setCurrentStage(WorkflowStage.IOM_GENERATED);
+			} else if (stageId === "QUOTATION_UPLOADED") {
+				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
 			}
 			// Buttons will be disabled after this, unless you want to handle other stages
 		} catch (error) {

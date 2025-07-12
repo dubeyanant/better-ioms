@@ -1,5 +1,6 @@
 "use client";
 
+import IOMActions from "@/components/downloadIOM";
 import ActionButtons from "@/components/ui/ActionButtons";
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
@@ -85,6 +86,7 @@ const RequestDetailsPage = () => {
 
 	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
 	const [isVendorFormVisible, setIsVendorFormVisible] = useState(true);
+	const [isIomActionsVisible, setIsIomActionsVisible] = useState(true);
 
 	useEffect(() => {
 		if (id) {
@@ -113,16 +115,6 @@ const RequestDetailsPage = () => {
 	}, [id]);
 
 	const isDone = currentStage === WorkflowStage.CLOSED;
-
-	const handleGenerateIOM = () => {
-		console.log("✅ Generating IOM...");
-		// Add logic to generate IOM
-	};
-
-	const handleCloseTicket = () => {
-		console.log("❌ Closing ticket...");
-		// Add logic to close the ticket
-	};
 
 	if (loading) {
 		return <div className="min-h-screen bg-gray-50 p-6">Loading...</div>;
@@ -221,27 +213,15 @@ const RequestDetailsPage = () => {
 				)}
 
 			{/* Section 5: Approval Timeline */}
-			{!isDone && currentStage === WorkflowStage.IOM_GENERATED && (
-				<section className="bg-white shadow rounded-lg p-6">
-					<h2 className="text-xl font-semibold text-blue-600 mb-4">
-						Final Actions
-					</h2>
-					<div className="flex justify-center gap-4">
-						<button
-							onClick={handleGenerateIOM}
-							className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
-						>
-							Generate IOM
-						</button>
-						<button
-							onClick={handleCloseTicket}
-							className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-						>
-							Close Ticket
-						</button>
-					</div>
-				</section>
-			)}
+			{!isDone &&
+				currentStage === WorkflowStage.IOM_GENERATED &&
+				user?.role === UserRole.CTO &&
+				isIomActionsVisible && (
+					<IOMActions
+						requestId={id}
+						onClose={() => setIsIomActionsVisible(false)}
+					/>
+				)}
 		</div>
 	);
 };

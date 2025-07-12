@@ -1,19 +1,22 @@
 "use client";
 
 import { api } from "@/lib/api";
+import { WorkflowStage } from "@/lib/utils";
+import { useWorkflow } from "@/lib/workflow-context";
 import { type AxiosResponse } from "axios";
 
 type IOMActionsProps = {
-	onCloseTicket?: () => void;
+	requestId: string;
+	onClose: () => void;
 };
 
-export default function IOMActions({ onCloseTicket }: IOMActionsProps) {
+export default function IOMActions({ requestId, onClose }: IOMActionsProps) {
+	const { setCurrentStage } = useWorkflow();
 	const handleGenerateIOM = async () => {
-		const id = 1;
 		console.log("✅ Generating IOM...");
 		try {
 			const response: AxiosResponse<Blob> = await api.get(
-				`/getDoc/${id}`,
+				`/getDoc/${requestId}`,
 				{
 					responseType: "blob",
 				},
@@ -23,7 +26,7 @@ export default function IOMActions({ onCloseTicket }: IOMActionsProps) {
 			const url = URL.createObjectURL(response.data);
 			const link = document.createElement("a");
 			link.href = url;
-			link.download = "downloaded.docx";
+			link.download = "BetterIOM.docx";
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
@@ -35,6 +38,18 @@ export default function IOMActions({ onCloseTicket }: IOMActionsProps) {
 			alert("Failed to download the Word document.");
 		}
 	};
+
+	const handleCloseTicket = async () => {
+		try {
+			await api.post(`data/update/${requestId}`, { stageId: "CLOSED" });
+			setCurrentStage(WorkflowStage.CLOSED);
+			onClose();
+		} catch (error) {
+			console.error("❌ Error closing ticket:", error);
+			alert("Failed to close ticket.");
+		}
+	};
+
 	return (
 		<div className="flex justify-center gap-4 mt-6">
 			<button
@@ -45,7 +60,7 @@ export default function IOMActions({ onCloseTicket }: IOMActionsProps) {
 			</button>
 
 			<button
-				onClick={onCloseTicket}
+				onClick={handleCloseTicket}
 				className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
 			>
 				Close Ticket
