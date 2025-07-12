@@ -61,9 +61,18 @@ interface ApiResponse {
 	data: RequestDetails;
 }
 
+const stageIdToWorkflowStage: { [key: string]: WorkflowStage } = {
+	"stage-1": WorkflowStage.REQUEST_CREATED,
+	REVIEWED: WorkflowStage.REVIEWED,
+	QUOTATION_UPLOADED: WorkflowStage.QUOTATION_UPLOADED,
+	APPROVED: WorkflowStage.APPROVED,
+	IOM_GENERATED: WorkflowStage.IOM_GENERATED,
+	CLOSED: WorkflowStage.CLOSED,
+};
+
 const RequestDetailsPage = () => {
 	const { user } = useAuth();
-	const { currentStage } = useWorkflow();
+	const { currentStage, setCurrentStage } = useWorkflow();
 	const params = useParams();
 	const id = params.id as string;
 
@@ -80,6 +89,14 @@ const RequestDetailsPage = () => {
 					setLoading(true);
 					const response = await get<ApiResponse>(`data/${id}`);
 					setRequestDetails(response.data);
+					if (response.data.stageId) {
+						const workflowStage =
+							stageIdToWorkflowStage[response.data.stageId];
+						if (workflowStage) {
+							setCurrentStage(workflowStage);
+						}
+					}
+					console.log(response.data);
 				} catch (err) {
 					setError("Failed to fetch request details.");
 					console.error(err);
@@ -126,7 +143,7 @@ const RequestDetailsPage = () => {
 	const {
 		title,
 		description, // Using description as scopeOfWork
-		category,
+		stageId,
 	} = requestDetails;
 
 	// The API returns scopeOfWork as a single string, but the UI expects an array.
@@ -169,18 +186,20 @@ const RequestDetailsPage = () => {
 			</section>
 
 			{/* Section 3: Upload Quotations */}
-			{!isDone && currentStage === WorkflowStage.QUOTATION_UPLOADED && (
-				<>
-					<section className="bg-white shadow rounded-lg p-6">
-						<h2 className="text-xl font-semibold text-blue-600 mb-4">
-							Upload Quotations
-						</h2>
-						<UploadAnalyze uploadFiles={setFilesUploadedProp} />
-					</section>
+			{!isDone &&
+				currentStage === WorkflowStage.QUOTATION_UPLOADED &&
+				user?.role === UserRole.IOM && (
+					<>
+						<section className="bg-white shadow rounded-lg p-6">
+							<h2 className="text-xl font-semibold text-blue-600 mb-4">
+								Upload Quotations
+							</h2>
+							<UploadAnalyze uploadFiles={setFilesUploadedProp} />
+						</section>
 
-					<section>{areFilesUploaded && <VendorForm />}</section>
-				</>
-			)}
+						<section>{areFilesUploaded && <VendorForm />}</section>
+					</>
+				)}
 
 			{/* Section 4: Take an Action */}
 			{!isDone &&

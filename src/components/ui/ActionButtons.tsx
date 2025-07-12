@@ -16,9 +16,11 @@ export default function ActionButtons({ requestId }: ActionButtonsProps) {
 		if (isSubmitting) return;
 		setIsSubmitting(true);
 		try {
-			await post(`data/update/${requestId}`, { stageId });
+			await post(`data/update/${requestId}`, { stageId: stageId });
 			if (stageId === "REVIEWED") {
 				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
+			} else if (stageId === "APPROVED") {
+				setCurrentStage(WorkflowStage.IOM_GENERATED);
 			}
 			// Buttons will be disabled after this, unless you want to handle other stages
 		} catch (error) {
