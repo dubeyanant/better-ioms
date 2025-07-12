@@ -81,7 +81,6 @@ export default function Dashboard() {
 		router.push(`/request_details/${id}`);
 	}
 
-	console.log(user?.role);
 	return (
 		<div>
 			{isClient &&

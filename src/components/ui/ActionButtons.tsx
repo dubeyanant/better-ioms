@@ -16,13 +16,17 @@ export default function ActionButtons({ requestId }: ActionButtonsProps) {
 		if (isSubmitting) return;
 		setIsSubmitting(true);
 		try {
-			await post(`data/update/${requestId}`, { stageId: stageId });
 			if (currentStage === WorkflowStage.APPROVED) {
 				setCurrentStage(WorkflowStage.IOM_GENERATED);
-			} else if (stageId === "QUOTATION_UPLOADED") {
+				await post(`data/update/${requestId}`, {
+					stageId: "IOM_GENERATED",
+				});
+			} else if (currentStage === WorkflowStage.REVIEWED) {
 				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
+				await post(`data/update/${requestId}`, {
+					stageId: "QUOTATION_UPLOADED",
+				});
 			}
-			// Buttons will be disabled after this, unless you want to handle other stages
 		} catch (error) {
 			console.error(`Failed to set stage to ${stageId}`, error);
 			setIsSubmitting(false); // Re-enable buttons on error

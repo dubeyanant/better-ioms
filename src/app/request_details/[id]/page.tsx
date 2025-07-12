@@ -102,7 +102,6 @@ const RequestDetailsPage = () => {
 							setCurrentStage(workflowStage);
 						}
 					}
-					console.log(response.data);
 				} catch (err) {
 					setError("Failed to fetch request details.");
 					console.error(err);
@@ -215,7 +214,7 @@ const RequestDetailsPage = () => {
 			{/* Section 5: Approval Timeline */}
 			{!isDone &&
 				currentStage === WorkflowStage.IOM_GENERATED &&
-				user?.role === UserRole.CTO &&
+				user?.role === UserRole.IOM &&
 				isIomActionsVisible && (
 					<IOMActions
 						requestId={id}
