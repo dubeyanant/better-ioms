@@ -1,50 +1,84 @@
 "use client";
 
-import Chatbot from "@/components/chatbot";
 import FinancialDashboard from "@/components/financial-dashboard";
+import { get } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { UserRole } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Request {
-	id: number;
+	requestId: number;
 	title: string;
+	category: string;
 	description: string;
+	subCategory: string;
+	requesterId: number;
+	stageId: string;
+	contractParty: string | null;
+	briefDescription: string | null;
+	annexure: string;
+	costCenter: string | null;
+	subCostCenter: string | null;
+	scopeOfWork: string | null;
+	recommendationAndRationale: string | null;
+	initiatedBy: string | null;
+	reviewedBy: string | null;
+	approvedBy: string | null;
+	formType: string;
+	date: string;
+	orderValue: string | null;
+	l1Name: string;
+	l2Name: string;
+	l3Name: string;
+	l1Price: string;
+	l2Price: string;
+	l3Price: string;
+	l1Total: string;
+	l2Total: string;
+	l3Total: string;
+	amount: string;
+	contractPeriod: string | null;
+	budgeted: string;
+	comparativeCostAnalysis: string | null;
+	roleInitiated: string;
+	toleReview: string;
+	roleApprove: string;
+	cmc: string;
+	rmc: string;
+	tmc: string;
+	selectedVendor: string | null;
 }
 
 export default function Dashboard() {
 	const { user } = useAuth();
-	const [requests, setRequests] = useState<Request[]>([
-		{ id: 1, title: "Ticket ID: 1", description: "Pending" },
-		{ id: 2, title: "Ticket ID: 2", description: "Completed" },
-	]);
+	const [requests, setRequests] = useState<Request[]>([]);
 	const [isClient, setIsClient] = useState(false);
 
 	useEffect(() => {
 		setIsClient(true);
+		const fetchRequests = async () => {
+			try {
+				const data = await get<Request[]>("data/getAll");
+				setRequests(data);
+			} catch (error) {
+				console.error("Failed to fetch requests:", error);
+			}
+		};
+		fetchRequests();
 	}, []);
 
 	// ✅ Toggle this to false to hide all chatbot logic
 	const showChatBotOn = true;
 
 	// ✅ Mobile chatbot modal toggle
-	const [showChatbotMobile, setShowChatbotMobile] = useState(false);
 	const router = useRouter();
 	const createNewRequest = () => {
-		const newId = requests.length + 1;
-		const newRequest = {
-			id: newId,
-			title: `Ticket ID: ${String.fromCharCode(64 + newId)}`,
-			description: `Processing`,
-		};
-
 		router.push("/create");
-		setRequests([...requests, newRequest]);
 	};
 
 	function handleRequestClick(id: number): void {
-		router.push(`/request_details`);
+		router.push(`/request_details/${id}`);
 	}
 
 	console.log(user?.role);
@@ -84,24 +118,23 @@ export default function Dashboard() {
 						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
 							{requests.map(req => (
 								<div
-									key={req.id}
-									onClick={() => handleRequestClick(req.id)}
-									className="bg-white p-4 rounded-lg shadow hover:shadow-md transition
-								"
+									key={req.requestId}
+									onClick={() =>
+										handleRequestClick(req.requestId)
+									}
+									className="bg-white p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer"
 								>
 									<h3 className="text-md font-semibold text-gray-700">
-										{req.title}
+										Title: {req.title}
 									</h3>
 									<p className="text-sm text-gray-500 mt-1">
-										{req.description}
+										Request ID: {req.requestId}
 									</p>
 								</div>
 							))}
 						</div>
 					</div>
 				</div>
-
-				{/* 🧱 Right section: Chatbot (only if showChatBotOn = true) */}
 			</div>
 		</div>
 	);
