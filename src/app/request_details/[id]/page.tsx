@@ -133,6 +133,8 @@ const RequestDetailsPage = () => {
 	// We'll use the description and split it by newlines for the list display.
 	const scopeOfWorkList = description ? description.split("\\n") : [];
 
+	console.log(user?.role);
+
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 space-y-8">
 			{/* Section 1: Request Info */}
@@ -186,11 +188,11 @@ const RequestDetailsPage = () => {
 				(currentStage === WorkflowStage.REVIEWED ||
 					currentStage === WorkflowStage.APPROVED) && (
 					<section>
-						<ActionButtons />
+						<ActionButtons requestId={id} />
 					</section>
 				)}
 
-			{/* Section 6: Final Actions */}
+			{/* Section 5: Approval Timeline */}
 			{!isDone && currentStage === WorkflowStage.IOM_GENERATED && (
 				<section className="bg-white shadow rounded-lg p-6">
 					<h2 className="text-xl font-semibold text-blue-600 mb-4">

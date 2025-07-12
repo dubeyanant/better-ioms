@@ -1,17 +1,30 @@
 "use client";
-import React from "react";
+import { post } from "@/lib/api";
+import { WorkflowStage } from "@/lib/utils";
+import { useWorkflow } from "@/lib/workflow-context";
+import React, { useState } from "react";
 
-export default function ActionButtons() {
-	const handleApprove = () => {
-		console.log("Approved!");
-	};
+interface ActionButtonsProps {
+	requestId: string;
+}
 
-	const handleDisapprove = () => {
-		console.log("Disapproved!");
-	};
+export default function ActionButtons({ requestId }: ActionButtonsProps) {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { setCurrentStage } = useWorkflow();
 
-	const handleHold = () => {
-		console.log("On Hold!");
+	const handleAction = async (stageId: string) => {
+		if (isSubmitting) return;
+		setIsSubmitting(true);
+		try {
+			await post(`data/update/${requestId}`, { stageId });
+			if (stageId === "REVIEWED") {
+				setCurrentStage(WorkflowStage.QUOTATION_UPLOADED);
+			}
+			// Buttons will be disabled after this, unless you want to handle other stages
+		} catch (error) {
+			console.error(`Failed to set stage to ${stageId}`, error);
+			setIsSubmitting(false); // Re-enable buttons on error
+		}
 	};
 
 	return (
@@ -22,20 +35,23 @@ export default function ActionButtons() {
 
 			<div className="flex flex-col sm:flex-row gap-4 w-full">
 				<button
-					onClick={handleApprove}
-					className="flex-1 min-w-[120px] bg-green-500 hover:bg-green-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all"
+					onClick={() => handleAction("REVIEWED")}
+					disabled={isSubmitting}
+					className="flex-1 min-w-[120px] bg-green-500 hover:bg-green-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
 				>
 					Approve
 				</button>
 				<button
-					onClick={handleDisapprove}
-					className="flex-1 min-w-[120px] bg-red-500 hover:bg-red-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all"
+					onClick={() => handleAction("DISAPPROVED")}
+					disabled={isSubmitting}
+					className="flex-1 min-w-[120px] bg-red-500 hover:bg-red-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
 				>
 					Disapprove
 				</button>
 				<button
-					onClick={handleHold}
-					className="flex-1 min-w-[120px] bg-yellow-500 hover:bg-yellow-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all"
+					onClick={() => handleAction("ON_HOLD")}
+					disabled={isSubmitting}
+					className="flex-1 min-w-[120px] bg-yellow-500 hover:bg-yellow-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-300 text-white font-medium py-2.5 px-4 rounded-md shadow transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
 				>
 					Hold
 				</button>
