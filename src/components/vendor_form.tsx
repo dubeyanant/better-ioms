@@ -1,5 +1,8 @@
 "use client";
 
+import api from "@/lib/api";
+import { WorkflowStage } from "@/lib/utils";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useState } from "react";
 
 type Vendor = {
@@ -8,7 +11,11 @@ type Vendor = {
 	totalCost: string;
 };
 
-export default function VendorForm() {
+type Props = {
+	requestID: string;
+};
+
+export default function VendorForm(requestID: Props) {
 	const [vendors, setVendors] = useState<Vendor[]>([
 		{ name: "", productCost: "", totalCost: "" },
 		{ name: "", productCost: "", totalCost: "" },
@@ -55,7 +62,30 @@ export default function VendorForm() {
 		setSelectedOption("");
 		setSelectedRadio("");
 		setJustification("");
+
+		try {
+			const resp = post(
+				"https://n8n.dimensiontwo.dev/webhook-test/532a8c8e-c90e-440b-8dfb-4dcc2c260ee1",
+				{
+					request_id: { requestID },
+					stage_id: WorkflowStage.QUOTATION_UPLOADED,
+				},
+			);
+		} catch (error) {}
 	};
+
+	async function post<T, D = any>(
+		endpoint: string,
+		data?: D,
+		config?: AxiosRequestConfig,
+	): Promise<T> {
+		const response: AxiosResponse<T> = await api.post(
+			endpoint,
+			data,
+			config,
+		);
+		return response.data;
+	}
 
 	const approvers = [
 		"IT-Production - Arun Kp",
