@@ -2,6 +2,7 @@
 
 import api from "@/lib/api";
 import { WorkflowStage } from "@/lib/utils";
+import { useWorkflow } from "@/lib/workflow-context";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useState } from "react";
 
@@ -13,9 +14,10 @@ type Vendor = {
 
 type Props = {
 	requestID: string;
+	onFormSubmit: () => void;
 };
 
-export default function VendorForm(requestID: Props) {
+export default function VendorForm({ requestID, onFormSubmit }: Props) {
 	const [vendors, setVendors] = useState<Vendor[]>([
 		{ name: "", productCost: "", totalCost: "" },
 		{ name: "", productCost: "", totalCost: "" },
@@ -25,6 +27,7 @@ export default function VendorForm(requestID: Props) {
 	const [selectedOption, setSelectedOption] = useState("");
 	const [selectedRadio, setSelectedRadio] = useState("");
 	const [justification, setJustification] = useState("");
+	const { setCurrentStage } = useWorkflow();
 
 	const handleVendorChange = (
 		index: number,
@@ -44,24 +47,23 @@ export default function VendorForm(requestID: Props) {
 		e.preventDefault();
 
 		const payload = {
-			vendors,
-			selectedOption,
-			selectedRadio,
-			justification,
+			costCenter: selectedOption,
+			recommendationAndRationale: justification,
+			l1Name: vendors[0].name,
+			l2Name: vendors[1].name,
+			l3Name: vendors[2].name,
+			l1Price: vendors[0].productCost,
+			l2Price: vendors[1].productCost,
+			l3Price: vendors[2].productCost,
+			l1Total: vendors[0].totalCost,
+			l2Total: vendors[1].totalCost,
+			l3Total: vendors[2].totalCost,
+			selectedVendor: selectedRadio,
+			stageId: "APPROVED",
 		};
 
 		// ✅ Just print in console
 		console.log("Form submitted data: ", payload);
-
-		// ✅ Optionally: clear the form
-		setVendors([
-			{ name: "", productCost: "", totalCost: "" },
-			{ name: "", productCost: "", totalCost: "" },
-			{ name: "", productCost: "", totalCost: "" },
-		]);
-		setSelectedOption("");
-		setSelectedRadio("");
-		setJustification("");
 
 		try {
 			const resp = post(
@@ -71,7 +73,22 @@ export default function VendorForm(requestID: Props) {
 					stage_id: WorkflowStage.QUOTATION_UPLOADED,
 				},
 			);
-		} catch (error) {}
+			await post(`data/update/${requestID}`, payload);
+			setCurrentStage(WorkflowStage.APPROVED);
+			onFormSubmit();
+
+			// ✅ Optionally: clear the form
+			setVendors([
+				{ name: "", productCost: "", totalCost: "" },
+				{ name: "", productCost: "", totalCost: "" },
+				{ name: "", productCost: "", totalCost: "" },
+			]);
+			setSelectedOption("");
+			setSelectedRadio("");
+			setJustification("");
+		} catch (error) {
+			console.error("Error submitting vendor data:", error);
+		}
 	};
 
 	async function post<T, D = any>(

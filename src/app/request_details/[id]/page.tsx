@@ -83,6 +83,9 @@ const RequestDetailsPage = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
+	const [isVendorFormVisible, setIsVendorFormVisible] = useState(true);
+
 	useEffect(() => {
 		if (id) {
 			const fetchRequestDetails = async () => {
@@ -110,10 +113,6 @@ const RequestDetailsPage = () => {
 	}, [id]);
 
 	const isDone = currentStage === WorkflowStage.CLOSED;
-
-	// 📦 Replace these with real data (from props, context, or API)
-
-	const [areFilesUploaded, setFilesUploadedProp] = useState(false);
 
 	const handleGenerateIOM = () => {
 		console.log("✅ Generating IOM...");
@@ -199,9 +198,12 @@ const RequestDetailsPage = () => {
 						</section>
 
 						<section>
-							{areFilesUploaded && (
+							{isVendorFormVisible && areFilesUploaded && (
 								<VendorForm
 									requestID={requestDetails.requestId.toString()}
+									onFormSubmit={() =>
+										setIsVendorFormVisible(false)
+									}
 								/>
 							)}
 						</section>
