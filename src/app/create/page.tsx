@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { post } from "@/lib/api";
+import { WorkflowStage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -104,6 +105,15 @@ export default function RequestForm() {
 				request_id: number;
 			}>("data/new", requestData);
 			router.push(`/request_details/${response.request_id}`);
+			try {
+				const resp = post(
+					"https://n8n.dimensiontwo.dev/webhook-test/532a8c8e-c90e-440b-8dfb-4dcc2c260ee1",
+					{
+						request_id: response.request_id,
+						stage_id: WorkflowStage.REQUEST_CREATED,
+					},
+				);
+			} catch (error) {}
 		} catch (error) {
 			console.error("Submission error:", error);
 			alert("An unexpected error occurred. Please try again later.");

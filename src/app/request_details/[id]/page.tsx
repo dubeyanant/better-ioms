@@ -4,10 +4,11 @@ import ActionButtons from "@/components/ui/ActionButtons";
 import WorkflowStatus from "@/components/ui/status_workflow";
 import UploadAnalyze from "@/components/update_analyse";
 import VendorForm from "@/components/vendor_form";
-import { get } from "@/lib/api";
+import api, { get } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { UserRole, WorkflowStage } from "@/lib/utils";
 import { useWorkflow } from "@/lib/workflow-context";
+import { AxiosResponse } from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -197,7 +198,13 @@ const RequestDetailsPage = () => {
 							<UploadAnalyze uploadFiles={setFilesUploadedProp} />
 						</section>
 
-						<section>{areFilesUploaded && <VendorForm />}</section>
+						<section>
+							{areFilesUploaded && (
+								<VendorForm
+									requestID={requestDetails.requestId.toString()}
+								/>
+							)}
+						</section>
 					</>
 				)}
 
